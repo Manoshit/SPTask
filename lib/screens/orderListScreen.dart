@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import '../providers/orderProvider.dart';
 
-class orderListScreen extends StatelessWidget {
+class orderListScreen extends StatefulWidget {
   static const routeName = '/orderListScreen';
 
   @override
+  _orderListScreenState createState() => _orderListScreenState();
+}
+
+class _orderListScreenState extends State<orderListScreen> {
+  final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
+  @override
+  void initState() {
+        SchedulerBinding.instance.addPostFrameCallback((_){  refreshIndicatorKey.currentState?.show(); } );
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
+  
     final ordersData = Provider.of<Orders>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text('Pull Down'),
         ),
         body: RefreshIndicator(
+          key: refreshIndicatorKey,
           onRefresh: () => ordersData.getOrderList(context),
           child: ListView.builder(
             itemBuilder: (ctx, index) {
